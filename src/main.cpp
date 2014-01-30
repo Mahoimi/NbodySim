@@ -1,12 +1,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cassert>
+#include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+#include <tr1/memory>
 
 #include <FreeFlyCamera.hpp>
 #include <MatrixStack.hpp>
 #include <MeshRenderer.hpp>
 #include <GLProgram.hpp>
+#include <Particle.hpp>
+#include <GravityLink.hpp>
 
 int main(){
 
@@ -39,6 +43,13 @@ int main(){
     }
 
     // Physics objects
+    srand(1);
+
+    std::vector<std::tr1::shared_ptr<PMat>> particles;
+    for (unsigned int i = 0; i < 500; ++i){
+        particles.emplace_back(new Particle(glm::vec3(rand()%200-100, rand()%200-100, -300),rand()%100-50));
+    }
+    GravityLink gravity;
 
     // Graphics objects & parameters
 
@@ -49,7 +60,7 @@ int main(){
 
     FreeFlyCamera camera;
     MatrixStack stack;
-    stack.set(glm::perspective(45.0f, width / (float) height, 0.01f, 100.f));
+    stack.set(glm::perspective(45.0f, width / (float) height, 0.01f, 1000.f));
 
     GLProgram program;
     program.load("../../shaders/simple.vs.glsl","../../shaders/simple.fs.glsl");
@@ -63,8 +74,10 @@ int main(){
     double xpos, ypos, prev_xpos, prev_ypos;
     glfwGetCursorPos(window, &prev_xpos, &prev_ypos);
 
+    bool space = false;
+
     // Main loop
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS)
     {
         // Clear framebuffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,6 +99,10 @@ int main(){
             camera.moveLeft(-0.05f);
         }
 
+        if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS){
+            space=true;
+        }
+
         // Mouse input
         glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -98,20 +115,38 @@ int main(){
         prev_xpos=xpos;
         prev_ypos=ypos;
 
-        // Save current state of the stack
-        stack.push();
+        if (space){
+            for (unsigned int i=0; i < particles.size(); ++i){
+                for (unsigned int j=i+1; j < particles.size(); ++j){
+                    gravity.setParticles(particles[i].get(), particles[j].get());
+                    gravity.update();
+                }
+            }
+            for (unsigned int i=0; i < particles.size(); ++i){
+                particles[i]->update();
+            }
+        }
 
-        // Mult Projection Matrix by View Matrix
-        stack.mult(camera.getViewMatrix());
+        for (unsigned int i = 0 ; i < particles.size() ; ++i)
+        {
 
-        // Set uniform values
-        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(stack.top()));
+            // Save current state of the stack
+            stack.push();
 
-        // Render meshes
-        sphere.render();
+            // Mult Projection Matrix by View Matrix
+            stack.mult(camera.getViewMatrix());
 
-        // Reset stack
-        stack.pop();
+            stack.translate(particles[i]->getPosition());
+
+            // Set uniform values
+            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(stack.top()));
+
+            // Render meshes
+            sphere.render();
+
+            // Reset stack
+            stack.pop();
+        }
 
         // Refresh window & events
         glfwSwapBuffers(window);
@@ -119,6 +154,8 @@ int main(){
     }
 
     // Free memory
+    particles.clear();
+
     glfwDestroyWindow(window);
     glfwTerminate();
 	return EXIT_SUCCESS;

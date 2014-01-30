@@ -15,20 +15,28 @@ public:
 
     }
 
-    PMat(glm::vec3 position, glm::vec3 velocity):m_position(position), m_velocity(velocity), m_mass(1.f){
+    PMat(const glm::vec3& position):
+        m_position(position),
+        m_mass(1.f){
 
     }
 
-    PMat(glm::vec3 position, glm::vec3 velocity, float mass):m_position(position), m_velocity(velocity), m_mass(mass){
+    PMat(const glm::vec3& position, const float mass):
+        m_position(position),
+        m_mass(mass){
 
-    }
-
-    inline void move(glm::vec3 deltapos){
-        m_pos += deltapos;
     }
 
     inline void addFrc(glm::vec3 force){
         m_force += force;
+    }
+
+    const glm::vec3& getPosition() const {
+        return m_position;
+    }
+
+    const float& getMass() const {
+        return m_mass;
     }
 
     virtual void update() = 0;
