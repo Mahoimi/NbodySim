@@ -21,6 +21,13 @@ public:
 
     }
 
+    PMat(const glm::vec3& position, const glm::vec3& velocity, const float mass):
+        m_position(position),
+        m_velocity(velocity),
+        m_mass(mass){
+
+    }
+
     PMat(const glm::vec3& position, const float mass):
         m_position(position),
         m_mass(mass){

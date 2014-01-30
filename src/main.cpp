@@ -10,6 +10,7 @@
 #include <MeshRenderer.hpp>
 #include <GLProgram.hpp>
 #include <Particle.hpp>
+#include <FixedPoint.hpp>
 #include <GravityLink.hpp>
 
 int main(){
@@ -46,8 +47,31 @@ int main(){
     srand(1);
 
     std::vector<std::tr1::shared_ptr<PMat>> particles;
+    particles.emplace_back(new FixedPoint(glm::vec3(0.f,0.f, -300), 100000));
+
     for (unsigned int i = 0; i < 500; ++i){
-        particles.emplace_back(new Particle(glm::vec3(rand()%200-100, rand()%200-100, -300),rand()%100-50));
+        glm::vec3 posrand(glm::vec3(rand()%200-100, rand()%200-100, -300));
+        float xrand = rand()%10+1;
+        glm::vec3 velocity(xrand, -posrand.x * xrand / posrand.y, 0);
+
+
+        if (posrand.y >= 0) {
+            velocity.x = abs(velocity.x);
+        }
+        else{
+            velocity.x = - abs(velocity.x);
+        }
+
+        if (posrand.x >= 0) {
+            velocity.y = -abs(velocity.y);
+        }
+        else {
+            velocity.y = abs(velocity.y);
+        }
+
+        velocity = glm::normalize(velocity);
+
+        particles.emplace_back(new Particle(posrand,velocity,1));
     }
     GravityLink gravity;
 
@@ -84,19 +108,19 @@ int main(){
 
         // Keyboard input
         if (glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS) {
-            camera.moveFront(0.05f);
+            camera.moveFront(1.f);
         }
 
         if (glfwGetKey(window, GLFW_KEY_DOWN)==GLFW_PRESS){
-            camera.moveFront(-0.05f);
+            camera.moveFront(-1.f);
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT)==GLFW_PRESS) {
-            camera.moveLeft(0.05f);
+            camera.moveLeft(1.f);
         }
 
         if (glfwGetKey(window, GLFW_KEY_RIGHT)==GLFW_PRESS){
-            camera.moveLeft(-0.05f);
+            camera.moveLeft(-1.f);
         }
 
         if (glfwGetKey(window, GLFW_KEY_SPACE)==GLFW_PRESS){
