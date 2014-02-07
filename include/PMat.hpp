@@ -38,11 +38,20 @@ public:
         m_force += force;
     }
 
-    const glm::vec3& getPosition() const {
+    inline const glm::vec3& getPosition() const {
         return m_position;
     }
 
-    const float& getMass() const {
+    inline glm::vec3& getVelocity() {
+        return m_velocity;
+    }
+
+    inline void set(const glm::vec3& position, const glm::vec3& velocity) {
+        m_position = position;
+        m_velocity = velocity;
+    }
+
+    inline float& getMass() {
         return m_mass;
     }
 

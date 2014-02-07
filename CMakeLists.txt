@@ -38,6 +38,9 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/glfw/include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/glm/)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/assimp/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/anttweakbar/include)
+
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/anttweakbar/lib)
 
 # Compile the project with the "source_files" variable under the name "NbodySim"
 add_executable(
@@ -45,4 +48,4 @@ add_executable(
         ${source_files}
 )
 
-target_link_libraries(NbodySim glfw ${GLFW_LIBRARIES} glew assimp ${OPENGL_LIBRARIES})
+target_link_libraries(NbodySim glfw ${GLFW_LIBRARIES} AntTweakBar glew assimp ${OPENGL_LIBRARIES})

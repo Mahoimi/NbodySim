@@ -109,5 +109,6 @@ void MeshRenderer::render() const{
     for (unsigned int i = 0 ; i < m_Entries.size() ; i++) {
         glBindVertexArray(m_Entries[i].m_VAO);
         glDrawElements(GL_TRIANGLES, m_Entries[i].m_numIndices, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
     }
 }
