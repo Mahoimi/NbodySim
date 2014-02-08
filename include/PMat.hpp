@@ -51,6 +51,10 @@ public:
         m_velocity = velocity;
     }
 
+    inline void setVelocity(const glm::vec3& velocity) {
+        m_velocity = velocity;
+    }
+
     inline float& getMass() {
         return m_mass;
     }

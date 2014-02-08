@@ -1,4 +1,5 @@
 #include <NBodySim.hpp>
+#include <iostream>
 
 int main(){
     const int WIDTH = 1600;

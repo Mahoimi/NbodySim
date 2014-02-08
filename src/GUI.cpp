@@ -53,6 +53,7 @@ void GUI::draw() const{
     TwDraw();
 }
 
-GUI::~GUI(){
+void GUI::terminate(){
+    TwDeleteBar(m_bar);
     TwTerminate();
 }

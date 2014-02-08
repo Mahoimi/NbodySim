@@ -16,7 +16,7 @@ public:
     void addResetButton(const std::string& name, void *data, const std::string &definition);
     void addStartButton(const std::string& name, void *data, const std::string &definition);
     void draw() const;
-    ~GUI();
+    void terminate();
 };
 
 

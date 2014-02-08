@@ -29,12 +29,16 @@ private:
     MeshRenderer m_sphere;
     GUI m_gui;
 
+    glm::vec3 m_earthInitVelocity;
+    glm::vec3 m_moonInitVelocity;
+
     float m_fps;
     bool m_launched;
 
     void initWindow(const int WIDTH, const int HEIGHT);
     void initPhysics();
     void initGraphics();
+    void terminate();
 
 public:
     NBodySim();
@@ -42,8 +46,6 @@ public:
     void run();
     void reset();
     void start();
-
-    ~NBodySim();
 };
 
 #endif // NBODYSIM_HPP
