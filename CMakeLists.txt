@@ -7,6 +7,7 @@ project(NbodySim)
 # Build cmake in the following directories
 add_subdirectory(lib/glfw)
 add_subdirectory(lib/assimp)
+add_subdirectory(lib/anttweakbar)
 
 add_definitions(-DGLEW_STATIC=1)
 include_directories(lib/glew/include)
@@ -39,8 +40,6 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/glfw/include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/glm/)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/assimp/include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/anttweakbar/include)
-
-LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/anttweakbar/lib)
 
 # Compile the project with the "source_files" variable under the name "NbodySim"
 add_executable(
