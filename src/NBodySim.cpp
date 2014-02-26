@@ -4,17 +4,17 @@
 #include <iostream>
 
 // Initial state
-const int MOON_MASS     = 10;
-const int EARTH_MASS    = 290000;
+const int SATELLITE_MASS     = 10;
+const int PLANET_MASS    = 290000;
 const int SUN_MASS      = 10000000;
 const float GRAVITY_CONSTANT = 0.01f;
 const float RATIO_DISTANCE = 100; // 1 => ratio*1 km
 
-const int DISTANCE_EARTH_MOON = 7;
-const int DISTANCE_EARTH_SUN = 80;
+const int DISTANCE_PLANET_SATELLITE = 7;
+const int DISTANCE_PLANET_SUN = 80;
 
-const glm::vec3 earth_position(0.f, DISTANCE_EARTH_SUN, -300.f);
-const glm::vec3 moon_position(earth_position.x, earth_position.y+DISTANCE_EARTH_MOON, earth_position.z);
+const glm::vec3 planet_position(0.f, DISTANCE_PLANET_SUN, -300.f);
+const glm::vec3 satellite_position(planet_position.x, planet_position.y+DISTANCE_PLANET_SATELLITE, planet_position.z);
 
 
 NBodySim::NBodySim():
@@ -57,13 +57,13 @@ void NBodySim::initWindow(const int WIDTH, const int HEIGHT){
 
 void NBodySim::initPhysics(){
     // Initial velocities of the particles
-    m_earthInitVelocity = glm::vec3(0.35f, 0, 0);
-    m_moonInitVelocity = glm::vec3(0.55f, 0, 0);
+    m_planetInitVelocity = glm::vec3(0.35f, 0, 0);
+    m_satelliteInitVelocity = glm::vec3(0.55f, 0, 0);
 
-    // Create three particles (Sun, Earth and Moon)
+    // Create three particles (Sun, Planet and Satellite)
     m_particles.emplace_back(new FixedPoint(glm::vec3(0.f,0.f, -300), SUN_MASS));
-    m_particles.emplace_back(new Particle(earth_position, EARTH_MASS));
-    m_particles.emplace_back(new Particle(moon_position, MOON_MASS));
+    m_particles.emplace_back(new Particle(planet_position, PLANET_MASS));
+    m_particles.emplace_back(new Particle(satellite_position, SATELLITE_MASS));
 }
 
 void NBodySim::initGraphics(){
@@ -81,9 +81,10 @@ void NBodySim::initGraphics(){
 
     // Set the uniform location for the MVP matrix
     m_MVPLocation = m_program.getUniformLocation("MVP");
+    m_colorLocation = m_program.getUniformLocation("uColor");
 
-    // Load the Sphere.obj file
-    m_sphere.load("../../assets/Sphere/sphere.obj");
+    // Init circle vertices
+    m_circle.init(30);
 
     // Enable Depth test
     glEnable(GL_DEPTH_TEST);
@@ -95,17 +96,17 @@ void NBodySim::initGraphics(){
     assert(m_particles.size() >= 3);
     m_gui.addParameter(m_particles[0]->getMass(), "sun_mass", "group='Sun' label='Mass' min=0 max=10000000 step=1000 help='Sun mass in kilograms'", true);
 
-    m_gui.addParameter(m_particles[1]->getMass(), "earth_mass", "group='Earth' label='Mass' min=0 max=10000000 step=1000 help='Earth mass in kilograms'", true);
-    m_gui.addParameter(m_earthInitVelocity.x, "earth_InitVelocity.x", "group='Earth' precision=3 label='Initial Velocity x' min=0 max=100 step=0.1 help='Earth initial velocity.x'", true);
-    m_gui.addParameter(m_earthInitVelocity.y, "earth_InitVelocity.y", "group='Earth' precision=3 label='Initial Velocity y' min=0 max=100 step=0.1 help='Earth initial velocity.y'", true);
-    m_gui.addParameter(m_particles[1]->getVelocity().x, "earth_velocity.x", "group='Earth' precision=3 label='Velocity x' help='Earth velocity.x'");
-    m_gui.addParameter(m_particles[1]->getVelocity().y, "earth_velocity.y", "group='Earth' precision=3 label='Velocity y' help='Earth velocity.x'");
+    m_gui.addParameter(m_particles[1]->getMass(), "planet_mass", "group='Planet' label='Mass' min=0 max=10000000 step=1000 help='Planet mass in kilograms'", true);
+    m_gui.addParameter(m_planetInitVelocity.x, "planet_InitVelocity.x", "group='Planet' precision=3 label='Initial Velocity x' min=0 max=100 step=0.1 help='Planet initial velocity.x'", true);
+    m_gui.addParameter(m_planetInitVelocity.y, "planet_InitVelocity.y", "group='Planet' precision=3 label='Initial Velocity y' min=0 max=100 step=0.1 help='Planet initial velocity.y'", true);
+    m_gui.addParameter(m_particles[1]->getVelocity().x, "planet_velocity.x", "group='Planet' precision=3 label='Velocity x' help='Planet velocity.x'");
+    m_gui.addParameter(m_particles[1]->getVelocity().y, "planet_velocity.y", "group='Planet' precision=3 label='Velocity y' help='Planet velocity.x'");
 
-    m_gui.addParameter(m_particles[2]->getMass(), "moon_mass", "group='Moon' label='Mass' min=0 max=10000000 step=1000 help='Moon mass in kilograms'", true);
-    m_gui.addParameter(m_moonInitVelocity.x, "moon_InitVelocity.x", "group='Moon' precision=3 label='Initial Velocity x' min=0 max=100 step=0.1 help='Moon initial velocity.x'", true);
-    m_gui.addParameter(m_moonInitVelocity.y, "moon_InitVelocity.y", "group='Moon' precision=3 label='Initial Velocity y' min=0 max=100 step=0.1 help='Moon initial velocity.y'", true);
-    m_gui.addParameter(m_particles[2]->getVelocity().x, "moon_velocity.x", "group='Moon' precision=3 label='Velocity x' help='Moon velocity.x'");
-    m_gui.addParameter(m_particles[2]->getVelocity().y, "moon_velocity.y", "group='Moon' precision=3 label='Velocity y' help='Moon velocity.y'");
+    m_gui.addParameter(m_particles[2]->getMass(), "satellite_mass", "group='Satellite' label='Mass' min=0 max=10000000 step=1000 help='Satellite mass in kilograms'", true);
+    m_gui.addParameter(m_satelliteInitVelocity.x, "satellite_InitVelocity.x", "group='Satellite' precision=3 label='Initial Velocity x' min=0 max=100 step=0.1 help='Satellite initial velocity.x'", true);
+    m_gui.addParameter(m_satelliteInitVelocity.y, "satellite_InitVelocity.y", "group='Satellite' precision=3 label='Initial Velocity y' min=0 max=100 step=0.1 help='Satellite initial velocity.y'", true);
+    m_gui.addParameter(m_particles[2]->getVelocity().x, "satellite_velocity.x", "group='Satellite' precision=3 label='Velocity x' help='Satellite velocity.x'");
+    m_gui.addParameter(m_particles[2]->getVelocity().y, "satellite_velocity.y", "group='Satellite' precision=3 label='Velocity y' help='Satellite velocity.y'");
 
     m_gui.addParameter(m_gravity.getGravityForce(), "gravity_force", "group='Gravity' precision=3 label='Force' min=0 max=2 step=0.01 help='Gravity force in N/kg'", true);
     m_gui.addParameter(m_gravity.getDistRatio(), "dist_ratio", "group='Gravity' label='Distance Ratio' min=0 max=10000 step=10 help='Multiply every distances'", true);
@@ -115,8 +116,8 @@ void NBodySim::initGraphics(){
 }
 
 void NBodySim::reset(){
-    m_particles[1]->set(earth_position, glm::vec3(0));
-    m_particles[2]->set(moon_position, glm::vec3(0));
+    m_particles[1]->set(planet_position, glm::vec3(0));
+    m_particles[2]->set(satellite_position, glm::vec3(0));
 
     m_launched = false;
 }
@@ -124,8 +125,8 @@ void NBodySim::reset(){
 void NBodySim::start(){
     if (m_launched == false){
         m_launched = true;
-        m_particles[1]->setVelocity(m_earthInitVelocity);
-        m_particles[2]->setVelocity(m_moonInitVelocity);
+        m_particles[1]->setVelocity(m_planetInitVelocity);
+        m_particles[2]->setVelocity(m_satelliteInitVelocity);
     }
 }
 
@@ -162,14 +163,31 @@ void NBodySim::run(){
 
             m_stack.translate(m_particles[i]->getPosition());
 
-            if (i==0) m_stack.scale(glm::vec3(4));
-            else if (i==1) m_stack.scale(glm::vec3(1.5));
+            glm::vec3 color;
+
+            // If particle is the Sun
+            if (i==0) {
+                m_stack.scale(glm::vec3(4));
+                color = glm::vec3(1,140.f/255,0);
+            }
+
+            // else if particle is the Planet
+            else if (i==1) {
+                m_stack.scale(glm::vec3(1.5f));
+                color = glm::vec3(0,0.5f,1);
+            }
+
+            // else if particle is the Satellite
+            else {
+                color = glm::vec3(0.8f);
+            }
 
             // Set uniform values
             glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, glm::value_ptr(m_stack.top()));
+            glUniform3fv(m_colorLocation, 1, glm::value_ptr(color));
 
             // Render meshes
-            m_sphere.render();
+            m_circle.render();
 
             // Reset stack
             m_stack.pop();

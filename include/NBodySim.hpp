@@ -5,10 +5,11 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <tr1/memory>
+#include <vector>
 
 #include <FreeFlyCamera.hpp>
 #include <MatrixStack.hpp>
-#include <MeshRenderer.hpp>
+#include <Circle.hpp>
 #include <GLProgram.hpp>
 #include <Particle.hpp>
 #include <FixedPoint.hpp>
@@ -26,11 +27,12 @@ private:
     FreeFlyCamera m_camera;
     MatrixStack m_stack;
     GLuint m_MVPLocation;
-    MeshRenderer m_sphere;
+    GLuint m_colorLocation;
+    Circle m_circle;
     GUI m_gui;
 
-    glm::vec3 m_earthInitVelocity;
-    glm::vec3 m_moonInitVelocity;
+    glm::vec3 m_planetInitVelocity;
+    glm::vec3 m_satelliteInitVelocity;
 
     float m_fps;
     bool m_launched;
