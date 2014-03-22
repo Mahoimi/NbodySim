@@ -1,0 +1,63 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{url}
+
+\begin{document}
+
+%Page de garde
+\title{Simulation physique d'un problème à N-corps }
+\author{Thomas Demenat\\
+  Ecole d'ingénieur IMAC,\\
+  Master SIS,\\
+  UPEM}
+  \date{Mars 2014}
+\maketitle
+
+\begin{abstract}
+En physique, le problème à N-corps est un problème classique de prédiction du mouvement individuel d'un groupe d'objets célestes s'attirant mutuellement par les lois de la gravité. Les grecs ont été motivé à résoudre ce problème par le désir de comprendre les mouvements du Soleil, des planètes et des étoiles visibles depuis la Terre. Au XXe siècle, comprendre la dynamique de systèmes solaires de type Amas Globulaires est devenu un problème à N-corps très important.\\ 
+Le problème en physique classique peut être décrit tel quel : "Soient les propriétés orbitales (position et vitesse instantanées à un instant $t$ dans le temps) d'un groupe d'objets célestes, en déduire leur interaction mutuelle et par conséquent, en déduire leurs nouvelles propriétés orbitales a un instant $t+n$ dans le futur".\\
+Basé sur cette définition, ce projet a pour but de simuler le mouvement de trois corps dans un système solaire simple constitué d'un soleil, une planète et un satellite.
+\end{abstract}
+
+\section*{Compilation du projet}
+Réalisé en C++ et OpenGL avec l'aide de plusieurs librairies externes, ce projet nécessite une étape de compilation avant exécution.
+Pour compiler le projet, assurez-vous d'avoir CMake installé (avec une version >= 2.6), puis utiliser les commandes suivantes dans votre terminal :
+
+\begin{verbatim}
+> mkdir build
+> cd build
+> cmake ..
+> make
+> cd bin
+> ./NBodySim
+\end{verbatim}
+
+Aucune dépendance externe n'a besoin d'être installée, les librairies étant directement incluses dans le projet.
+Vous pouvez retrouver l'ensemble du projet sur Github a cette adresse : \url{https://github.com/Mahoimi/NbodySim}
+
+\section*{Loi de Newton}
+
+La loi d'attraction universelle de Newton stipule que quelque soient deux objets dans l'univers, ceux-ci s'attirent mutuellement avec une force qui est directement proportionnelle au produit de leurs masses et inversement proportionnelle au carré de la distance les séparant.
+Cette loi de physique générale fait partie du travail d'Isaac Newton dans son livre Philosophiæ Naturalis Principia Mathematica, publié en 1687.
+
+En d'autres termes, cette loi suit la formule mathématique suivante :
+\[
+F = G\frac{m_1m_2}{d^2}
+\]
+avec :
+\begin{itemize}
+\item $F$ : force entre les deux masses (en $\mathrm{N}$)
+\item $G$ : constante gravitationnelle équivalente à $6.67384 \times 10^{-11} \mathrm{N.m^2.kg^{-2}}$
+\item $m_1$ : la masse du premier objet (en $\mathrm{kg}$)
+\item $m_2$ : la masse du second objet (en $\mathrm{kg}$)
+\item $d$ : la distance séparant les deux objets (en $\mathrm{m}$)
+\end{itemize}
+
+Cette loi n'est cependant vraie tant que la vitesse des objets étudiés reste inférieure à la vitesse de la lumière. Dans ce cas, on doit utiliser la loi de la Relativité générale établie par Albert Einstein.
+Dans le cadre de l'étude de systèmes solaires, il est relativement admis qu'on utilise le principe de Newton car elle reste véridique et plus facile à implémenter.
+
+\section*{Leapfrog solver}
+
+\end{document}
