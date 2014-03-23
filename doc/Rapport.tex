@@ -16,7 +16,7 @@
 \maketitle
 
 \begin{abstract}
-En physique, le problème à N-corps est un problème classique de prédiction du mouvement individuel d'un groupe d'objets célestes s'attirant mutuellement par les lois de la gravité. Les grecs ont été motivé à résoudre ce problème par le désir de comprendre les mouvements du Soleil, des planètes et des étoiles visibles depuis la Terre. Au XXe siècle, comprendre la dynamique de systèmes solaires de type Amas Globulaires est devenu un problème à N-corps très important.\\ 
+En physique, le problème à N-corps est un problème classique de prédiction du mouvement individuel d'un groupe d'objets célestes s'attirant mutuellement par les lois de la gravité. Les grecs ont été motivés à résoudre ce problème par le désir de comprendre les mouvements du Soleil, des planètes et des étoiles visibles depuis la Terre. Au XXe siècle, comprendre la dynamique de systèmes solaires de type Amas Globulaires est devenu un problème à N-corps très important. Or il est impossible de résoudre ce genre de problème sans recourir à des programmes de simulation physique.\\ 
 Le problème en physique classique peut être décrit tel quel : "Soient les propriétés orbitales (position et vitesse instantanées à un instant $t$ dans le temps) d'un groupe d'objets célestes, en déduire leur interaction mutuelle et par conséquent, en déduire leurs nouvelles propriétés orbitales a un instant $t+n$ dans le futur".\\
 Basé sur cette définition, ce projet a pour but de simuler le mouvement de trois corps dans un système solaire simple constitué d'un soleil, une planète et un satellite.
 \end{abstract}
@@ -58,6 +58,44 @@ avec :
 Cette loi n'est cependant vraie tant que la vitesse des objets étudiés reste inférieure à la vitesse de la lumière. Dans ce cas, on doit utiliser la loi de la Relativité générale établie par Albert Einstein.
 Dans le cadre de l'étude de systèmes solaires, il est relativement admis qu'on utilise le principe de Newton car elle reste véridique et plus facile à implémenter.
 
-\section*{Leapfrog solver}
+\section*{Intégration Leapfrog}
+
+Afin de calculer les positions et les vitesses de chaque planète en fonction des forces appliquées, j'ai intégré la méthode dite d'intégration Leapfrog.\\\\
+Son nom vient du fait que les positions et les vitesses "sautent" l'une au dessus de l'autre : en effet, tandis que les positions sont calculées à des instants $t_i, t_{i+1}, t_{i+2}, \cdots$ espacés par un intervalle constant $\Delta t$, les vitesses sont définies à des instants intermédiaires $t_{i-\frac{1}{2}}, t_{i+\frac{1}{2}}, t_{i+\frac{3}{2}} \cdots$, où $t_{i+1} - t_{i+\frac{1}{2}} = t_{i+\frac{1}{2}} - t_i = \frac{\Delta t}{2}$.\\
+En outre, les positions et les vitesses sont définies par les équations mathématiques suivantes :
+\[ x_{i}  = x_{i-1} + v_{i-\frac{1}{2}}\Delta t\]
+\[ v_{i+\frac{1}{2}}  = v_{i-\frac{1}{2}} + a_{i}\Delta t\]
+où l'accélération $a_{i} = \frac{F_{i}}{m}$ avec $F_{i}$ la force appliqué à l'instant $i$ sur un corps de masse $m$.
+\\\\
+Cette méthode a l'avantage d'être simple d'implémentation, de pouvoir être inversée à n'importe quel instant (de passer à un instant $t$ à un instant $t_{-1}$) et d'être de type "symplectique", i.e.\ conserve chaque changement infime d'energie d'un système dynamique. Contrairement à d'autres méthodes, il est parfaitement adapté dans le cadre de la simulation de mouvements orbitaux. 
+
+\section*{Paramètrage du système}
+
+Afin d'obtenir un résultat stable, j'ai apporté quelques modifications aux paramètres initiaux de la loi de Newton.\\
+Ainsi la constante gravitionnelle $G$ est définie ainsi :
+\[ G = 0.01 \mathrm{N.m^2.kg^{-2}}\] 
+Aussi, les positions de chaque planète dans l'application est de l'ordre de $10^2$ mètre.
+J'ai également appliqué des vitesses initiales à la planète et à son satellite et fixé la position du soleil.\\
+Voici les paramètres initiaux de chaque corps céleste :
+
+\begin{itemize}
+\item Soleil
+\begin{itemize}
+\item Position $(x,y,z)$ = $(0,0,-300)$
+\item Masse = $10^7 \mathrm{kg}$
+\end{itemize}
+\item Planète
+\begin{itemize}
+\item Position $(x,y,z)$ = $(0,80,-300)$
+\item Masse = $2,9\times10^5 \mathrm{kg}$
+\item Vitesse initiale $(x,y)$ = $(0.35,0)$ en $\mathrm{m.s^{-1}}$
+\end{itemize}
+\item Satellite
+\begin{itemize}
+\item Position $(x,y,z)$ = $(0,87,-300)$
+\item Masse = $10 \mathrm{kg}$
+\item Vitesse initiale $(x,y)$ = $(0.55,0)$ en $\mathrm{m.s^{-1}}$
+\end{itemize}
+\end{itemize}
 
 \end{document}
